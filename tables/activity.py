@@ -19,8 +19,8 @@ class Activity(MappedAsDataclass, Base):
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
 
     name: Mapped[str]
-    outcomes: Mapped[str]
-    summary: Mapped[str]
+    description: Mapped[str]
+    prompt: Mapped[str]
 
     textbook_id: Mapped[int] = mapped_column(ForeignKey("textbooks.id"))
     textbook: Mapped[Textbook] = relationship(back_populates="activities", init=False)
