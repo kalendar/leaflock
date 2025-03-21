@@ -3,7 +3,7 @@ OELMs generative textbook definition.
 
 ## Current Definitions
 - ✅ SQLAlchemy (`/tables`)
-- ⬜ Pydantic
+- ✅ Pydantic
 - ⬜ . . .
 
 ## How are OELM Textbooks Stored?

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey
@@ -10,24 +11,25 @@ from .joins import module_activity
 from .textbook import Textbook
 
 if TYPE_CHECKING:
-    from .activity import Activity
-    from .textbook import Textbook
+    from .module import Module
 
 
-class Module(MappedAsDataclass, Base):
-    __tablename__ = "modules"
+class Activity(MappedAsDataclass, Base):
+    __tablename__ = "activities"
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
+    guid: Mapped[uuid.UUID] = mapped_column(init=False, insert_default=uuid.uuid4)
+
     name: Mapped[str]
-    outcomes: Mapped[str]
-    summary: Mapped[str]
+    description: Mapped[str]
+    prompt: Mapped[str]
 
-    textbook_id: Mapped[int] = mapped_column(ForeignKey("textbooks.id"))
-    textbook: Mapped[Textbook] = relationship(back_populates="modules", init=False)
+    textbook_id: Mapped[int] = mapped_column(ForeignKey("textbooks.id"), init=False)
+    textbook: Mapped[Textbook] = relationship(back_populates="activities", init=False)
 
-    activities: Mapped[set[Activity]] = relationship(
+    modules: Mapped[set[Module]] = relationship(
         default_factory=set,
-        back_populates="modules",
+        back_populates="activities",
         secondary=module_activity,
     )
 
