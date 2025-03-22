@@ -1,4 +1,5 @@
 import uuid
+from pathlib import Path
 
 import pytest
 from sqlalchemy import create_engine, select
@@ -19,6 +20,12 @@ def in_memory_database_session() -> sessionmaker[Session]:
     Base.metadata.create_all(engine)
     SessionLocal = sessionmaker(bind=engine)
     return SessionLocal
+
+
+@pytest.fixture
+def file_database_path(tmp_path: Path) -> Path:
+    database_path = tmp_path / "testing_database.db"
+    return database_path
 
 
 @pytest.fixture

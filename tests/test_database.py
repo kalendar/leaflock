@@ -1,9 +1,11 @@
 import uuid
+from pathlib import Path
 
 import pytest
-from sqlalchemy import select
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
+from leaflock.database import create_database, upgrade_database
 from leaflock.pydantic_models import Activity as PydanticActivity
 from leaflock.pydantic_models import Module as PydanticModule
 from leaflock.pydantic_models import Textbook as PydanticTextbook
@@ -54,8 +56,14 @@ def textbook_data() -> PydanticTextbook:
     )
 
 
-def test_create_database(in_memory_database_session: sessionmaker[Session]):
+def test_create_database_in_memory(in_memory_database_session: sessionmaker[Session]):
     assert bool(in_memory_database_session.begin()) is True
+
+
+def test_create_database_as_file(file_database_path: Path):
+    create_database(database_path=file_database_path)
+
+    assert file_database_path.exists() and file_database_path.is_file()
 
 
 def test_commit_and_query_textbook(
@@ -127,3 +135,14 @@ def test_commit_and_query_textbook(
             assert module.name == pydantic_module.name
             assert module.summary == pydantic_module.summary
             assert module.outcomes == pydantic_module.outcomes
+
+
+def test_database_upgrade(file_database_path: Path):
+    upgrade_database(database_path=file_database_path)
+
+    assert file_database_path.exists() and file_database_path.is_file()
+
+    engine = create_engine(f"sqlite:///{file_database_path}")
+
+    # Table/column exists
+    assert engine.connect().exec_driver_sql("SELECT version_num FROM alembic_version")
