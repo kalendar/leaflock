@@ -7,11 +7,11 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from leaflock.database import create_database, upgrade_database
 from leaflock.pydantic_models import Activity as PydanticActivity
-from leaflock.pydantic_models import Module as PydanticModule
 from leaflock.pydantic_models import Textbook as PydanticTextbook
+from leaflock.pydantic_models import Topic as PydanticTopic
 from leaflock.sqlalchemy_tables import Activity as SQLActivity
-from leaflock.sqlalchemy_tables import Module as SQLModule
 from leaflock.sqlalchemy_tables import Textbook as SQLTextbook
+from leaflock.sqlalchemy_tables import Topic as SQLTopic
 
 
 @pytest.fixture
@@ -37,19 +37,19 @@ def textbook_data() -> PydanticTextbook:
                 ),
             ]
         ),
-        modules=set(
+        topics=set(
             [
-                PydanticModule(
+                PydanticTopic(
                     guid=uuid.uuid4(),
-                    name="Module 1",
-                    outcomes="Module outcome 1",
-                    summary="Module summary 1",
+                    name="Topic 1",
+                    outcomes="Topic outcome 1",
+                    summary="Topic summary 1",
                 ),
-                PydanticModule(
+                PydanticTopic(
                     guid=uuid.uuid4(),
-                    name="Module 2",
-                    outcomes="Module outcome 2",
-                    summary="Module summary 2",
+                    name="Topic 2",
+                    outcomes="Topic outcome 2",
+                    summary="Topic summary 2",
                 ),
             ]
         ),
@@ -79,22 +79,22 @@ def test_commit_and_query_textbook(
         sql_activity.guid = pydantic_activity.guid
         activities.add(sql_activity)
 
-    modules: set[SQLModule] = set()
-    for pydantic_module in textbook_data.modules:
-        sql_module = SQLModule(
-            name=pydantic_module.name,
-            outcomes=pydantic_module.outcomes,
-            summary=pydantic_module.summary,
+    topics: set[SQLTopic] = set()
+    for pydantic_topic in textbook_data.topics:
+        sql_topic = SQLTopic(
+            name=pydantic_topic.name,
+            outcomes=pydantic_topic.outcomes,
+            summary=pydantic_topic.summary,
         )
-        sql_module.guid = pydantic_module.guid
-        modules.add(sql_module)
+        sql_topic.guid = pydantic_topic.guid
+        topics.add(sql_topic)
 
     sql_textbook = SQLTextbook(
         title=textbook_data.title,
         prompt=textbook_data.prompt,
         authors=textbook_data.authors,
         activities=activities,
-        modules=modules,
+        topics=topics,
     )
 
     with in_memory_database_session.begin() as session:
@@ -112,13 +112,13 @@ def test_commit_and_query_textbook(
         pydantic_activity_by_guid: dict[uuid.UUID, PydanticActivity] = {
             activity.guid: activity for activity in textbook_data.activities
         }
-        pydantic_module_by_guid: dict[uuid.UUID, PydanticModule] = {
-            module.guid: module for module in textbook_data.modules
+        pydantic_topic_by_guid: dict[uuid.UUID, PydanticTopic] = {
+            topic.guid: topic for topic in textbook_data.topics
         }
 
-        # Assert that textbook activities and modules counts are correct
+        # Assert that textbook activities and topics counts are correct
         assert len(textbook_obj.activities) == len(textbook_data.activities)
-        assert len(textbook_obj.modules) == len(textbook_data.modules)
+        assert len(textbook_obj.topics) == len(textbook_data.topics)
 
         # Assert that each activities' attributes are exactly the same
         for activity in textbook_obj.activities:
@@ -128,13 +128,13 @@ def test_commit_and_query_textbook(
             assert activity.description == pydantic_activity.description
             assert activity.prompt == pydantic_activity.prompt
 
-        # Assert that each modules' attributes are exactly the same
-        for module in textbook_obj.modules:
-            pydantic_module = pydantic_module_by_guid.get(module.guid)
-            assert pydantic_module is not None
-            assert module.name == pydantic_module.name
-            assert module.summary == pydantic_module.summary
-            assert module.outcomes == pydantic_module.outcomes
+        # Assert that each topics' attributes are exactly the same
+        for topic in textbook_obj.topics:
+            pydantic_topic = pydantic_topic_by_guid.get(topic.guid)
+            assert pydantic_topic is not None
+            assert topic.name == pydantic_topic.name
+            assert topic.summary == pydantic_topic.summary
+            assert topic.outcomes == pydantic_topic.outcomes
 
 
 def test_database_upgrade(file_database_path: Path):

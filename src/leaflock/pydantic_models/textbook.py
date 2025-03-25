@@ -3,7 +3,7 @@ import uuid
 from pydantic import BaseModel
 
 from .activity import Activity
-from .module import Module
+from .topic import Topic
 
 
 class Textbook(BaseModel):
@@ -13,7 +13,7 @@ class Textbook(BaseModel):
     authors: str
 
     activities: set[Activity]
-    modules: set[Module]
+    topics: set[Topic]
 
     def __hash__(self) -> int:
         return hash(self.guid)

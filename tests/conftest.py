@@ -6,11 +6,11 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, joinedload, sessionmaker
 
 from leaflock.pydantic_models import Activity as PydanticActivity
-from leaflock.pydantic_models import Module as PydanticModule
 from leaflock.pydantic_models import Textbook as PydanticTextbook
+from leaflock.pydantic_models import Topic as PydanticTopic
 from leaflock.sqlalchemy_tables import Activity as SQLActivity
-from leaflock.sqlalchemy_tables import Module as SQLModule
 from leaflock.sqlalchemy_tables import Textbook as SQLTextbook
+from leaflock.sqlalchemy_tables import Topic as SQLTopic
 from src.leaflock.sqlalchemy_tables import Base
 
 
@@ -30,8 +30,8 @@ def file_database_path(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def complete_textbook_model() -> PydanticTextbook:
-    module_1_guid = uuid.uuid4()
-    module_2_guid = uuid.uuid4()
+    topic_1_guid = uuid.uuid4()
+    topic_2_guid = uuid.uuid4()
 
     return PydanticTextbook(
         guid=uuid.uuid4(),
@@ -45,30 +45,30 @@ def complete_textbook_model() -> PydanticTextbook:
                     name="Activity 1",
                     description="Activity description 1",
                     prompt="Activity prompt 1",
-                    modules=set([module_1_guid]),
+                    topics=set([topic_1_guid]),
                 ),
                 PydanticActivity(
                     guid=uuid.uuid4(),
                     name="Activity 2",
                     description="Activity description 2",
                     prompt="Activity prompt 2",
-                    modules=set([module_1_guid, module_2_guid]),
+                    topics=set([topic_1_guid, topic_2_guid]),
                 ),
             ]
         ),
-        modules=set(
+        topics=set(
             [
-                PydanticModule(
-                    guid=module_1_guid,
-                    name="Module 1",
-                    outcomes="Module outcome 1",
-                    summary="Module summary 1",
+                PydanticTopic(
+                    guid=topic_1_guid,
+                    name="Topic 1",
+                    outcomes="Topic outcome 1",
+                    summary="Topic summary 1",
                 ),
-                PydanticModule(
-                    guid=module_2_guid,
-                    name="Module 2",
-                    outcomes="Module outcome 2",
-                    summary="Module summary 2",
+                PydanticTopic(
+                    guid=topic_2_guid,
+                    name="Topic 2",
+                    outcomes="Topic outcome 2",
+                    summary="Topic summary 2",
                 ),
             ]
         ),
@@ -94,14 +94,14 @@ def complete_textbook_object(
                 for activity in complete_textbook_model.activities
             ]
         ),
-        modules=set(
+        topics=set(
             [
-                SQLModule(
-                    name=module.name,
-                    outcomes=module.outcomes,
-                    summary=module.summary,
+                SQLTopic(
+                    name=topic.name,
+                    outcomes=topic.outcomes,
+                    summary=topic.summary,
                 )
-                for module in complete_textbook_model.modules
+                for topic in complete_textbook_model.topics
             ]
         ),
     )
@@ -112,8 +112,8 @@ def complete_textbook_object(
     with in_memory_database_session.begin() as session:
         expunged_textbook_obj = session.scalar(
             select(SQLTextbook).options(
-                joinedload(SQLTextbook.activities).joinedload(SQLActivity.modules),
-                joinedload(SQLTextbook.modules),
+                joinedload(SQLTextbook.activities).joinedload(SQLActivity.topics),
+                joinedload(SQLTextbook.topics),
             )
         )
         if expunged_textbook_obj is None:

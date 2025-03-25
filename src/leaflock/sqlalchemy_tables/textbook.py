@@ -9,14 +9,15 @@ from .base import Base
 
 if TYPE_CHECKING:
     from .activity import Activity
-    from .module import Module
+    from .topic import Topic
 
 
 class Textbook(MappedAsDataclass, Base):
     __tablename__ = "textbooks"
 
-    id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    guid: Mapped[uuid.UUID] = mapped_column(init=False, insert_default=uuid.uuid4)
+    guid: Mapped[uuid.UUID] = mapped_column(
+        init=False, primary_key=True, insert_default=uuid.uuid4
+    )
 
     title: Mapped[str]
     prompt: Mapped[str]
@@ -28,11 +29,11 @@ class Textbook(MappedAsDataclass, Base):
         cascade="all, delete-orphan",
     )
 
-    modules: Mapped[set[Module]] = relationship(
+    topics: Mapped[set[Topic]] = relationship(
         default_factory=set,
         back_populates="textbook",
         cascade="all, delete-orphan",
     )
 
     def __hash__(self) -> int:
-        return hash(f"{self.id}{self.title}")
+        return hash(self.guid)

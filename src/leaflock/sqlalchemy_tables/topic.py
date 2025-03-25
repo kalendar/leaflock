@@ -11,29 +11,29 @@ from .joins import topic_activity
 from .textbook import Textbook
 
 if TYPE_CHECKING:
-    from .topic import Topic
+    from .activity import Activity
+    from .textbook import Textbook
 
 
-class Activity(MappedAsDataclass, Base):
-    __tablename__ = "activities"
+class Topic(MappedAsDataclass, Base):
+    __tablename__ = "topics"
 
     guid: Mapped[uuid.UUID] = mapped_column(
         init=False, primary_key=True, insert_default=uuid.uuid4
     )
 
     name: Mapped[str]
-    description: Mapped[str]
-    prompt: Mapped[str]
+    outcomes: Mapped[str]
+    summary: Mapped[str]
 
     textbook_guid: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("textbooks.guid"),
-        init=False,
+        ForeignKey("textbooks.guid"), init=False
     )
-    textbook: Mapped[Textbook] = relationship(back_populates="activities", init=False)
+    textbook: Mapped[Textbook] = relationship(back_populates="topics", init=False)
 
-    topics: Mapped[set[Topic]] = relationship(
+    activities: Mapped[set[Activity]] = relationship(
         default_factory=set,
-        back_populates="activities",
+        back_populates="topics",
         secondary=topic_activity,
     )
 

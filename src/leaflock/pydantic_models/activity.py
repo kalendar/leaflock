@@ -9,7 +9,7 @@ class Activity(BaseModel, from_attributes=True):
     description: str
     prompt: str
 
-    modules: set[uuid.UUID] = Field(default_factory=set)
+    topics: set[uuid.UUID] = Field(default_factory=set)
 
     def __hash__(self) -> int:
         return hash(self.guid)

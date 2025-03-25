@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from sqlalchemy import Column, ForeignKey, Integer, Table
+from sqlalchemy import Column, ForeignKey, String, Table
 
 from .base import Base
 
-module_activity = Table(
-    "module_activity",
+topic_activity = Table(
+    "topic_activity",
     Base.metadata,
-    Column("module_id", Integer, ForeignKey("modules.id"), primary_key=True),
-    Column("activity_id", Integer, ForeignKey("activities.id"), primary_key=True),
+    Column("topic_id", String, ForeignKey("topics.guid"), primary_key=True),
+    Column("activity_id", String, ForeignKey("activities.guid"), primary_key=True),
 )

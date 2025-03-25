@@ -1,11 +1,11 @@
 import uuid
 
 from .pydantic_models import Activity as PydanticActivity
-from .pydantic_models import Module as PydanticModule
 from .pydantic_models import Textbook as PydanticTextbook
+from .pydantic_models import Topic as PydanticTopic
 from .sqlalchemy_tables import Activity as SQLActivity
-from .sqlalchemy_tables import Module as SQLModule
 from .sqlalchemy_tables import Textbook as SQLTextbook
+from .sqlalchemy_tables import Topic as SQLTopic
 
 
 def sqla_to_pydantic(sqla_textbook: SQLTextbook) -> PydanticTextbook:
@@ -21,31 +21,29 @@ def sqla_to_pydantic(sqla_textbook: SQLTextbook) -> PydanticTextbook:
                     name=activity.name,
                     description=activity.description,
                     prompt=activity.prompt,
-                    modules=set([module.guid for module in activity.modules]),
+                    topics=set([topic.guid for topic in activity.topics]),
                 )
                 for activity in sqla_textbook.activities
             ]
         ),
-        modules=set(
-            [PydanticModule.model_validate(module) for module in sqla_textbook.modules]
+        topics=set(
+            [PydanticTopic.model_validate(topic) for topic in sqla_textbook.topics]
         ),
     )
 
 
 def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
-    modules: set[SQLModule] = set()
-    for pydantic_module in pydantic_textbook.modules:
-        sql_module = SQLModule(
-            name=pydantic_module.name,
-            outcomes=pydantic_module.outcomes,
-            summary=pydantic_module.summary,
+    topics: set[SQLTopic] = set()
+    for pydantic_topic in pydantic_textbook.topics:
+        sql_topic = SQLTopic(
+            name=pydantic_topic.name,
+            outcomes=pydantic_topic.outcomes,
+            summary=pydantic_topic.summary,
         )
-        sql_module.guid = pydantic_module.guid
-        modules.add(sql_module)
+        sql_topic.guid = pydantic_topic.guid
+        topics.add(sql_topic)
 
-    modules_by_guid: dict[uuid.UUID, SQLModule] = {
-        module.guid: module for module in modules
-    }
+    topics_by_guid: dict[uuid.UUID, SQLTopic] = {topic.guid: topic for topic in topics}
 
     activities: set[SQLActivity] = set()
     for pydantic_activity in pydantic_textbook.activities:
@@ -55,11 +53,11 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
             prompt=pydantic_activity.prompt,
         )
 
-        for guid in pydantic_activity.modules:
-            module = modules_by_guid.get(guid)
-            if module is None:
-                raise ValueError(f"No SQLModule with guid: {guid}")
-            sql_activity.modules.add(module)
+        for guid in pydantic_activity.topics:
+            topic = topics_by_guid.get(guid)
+            if topic is None:
+                raise ValueError(f"No SQLTopic with guid: {guid}")
+            sql_activity.topics.add(topic)
 
         sql_activity.guid = pydantic_activity.guid
         activities.add(sql_activity)
@@ -69,5 +67,5 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
         prompt=pydantic_textbook.prompt,
         authors=pydantic_textbook.authors,
         activities=activities,
-        modules=modules,
+        topics=topics,
     )

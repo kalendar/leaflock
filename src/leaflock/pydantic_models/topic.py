@@ -3,7 +3,7 @@ import uuid
 from pydantic import BaseModel
 
 
-class Module(BaseModel, from_attributes=True):
+class Topic(BaseModel, from_attributes=True):
     guid: uuid.UUID
     name: str
     outcomes: str
