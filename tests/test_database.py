@@ -97,6 +97,15 @@ def test_commit_and_query_textbook(
         topics=topics,
     )
 
+    # Add an activity to a topic.
+    joined_topic = sql_textbook.topics.copy().pop()
+    joined_activity = sql_textbook.activities.copy().pop()
+
+    joined_topic.activities = set([joined_activity])
+
+    joined_topic_guid = joined_topic.guid
+    joined_activity_guid = joined_activity.guid
+
     with in_memory_database_session.begin() as session:
         session.add(sql_textbook)
 
@@ -121,12 +130,12 @@ def test_commit_and_query_textbook(
         assert len(textbook_obj.topics) == len(textbook_data.topics)
 
         # Assert that each activities' attributes are exactly the same
-        for activity in textbook_obj.activities:
-            pydantic_activity = pydantic_activity_by_guid.get(activity.guid)
+        for joined_activity in textbook_obj.activities:
+            pydantic_activity = pydantic_activity_by_guid.get(joined_activity.guid)
             assert pydantic_activity is not None
-            assert activity.name == pydantic_activity.name
-            assert activity.description == pydantic_activity.description
-            assert activity.prompt == pydantic_activity.prompt
+            assert joined_activity.name == pydantic_activity.name
+            assert joined_activity.description == pydantic_activity.description
+            assert joined_activity.prompt == pydantic_activity.prompt
 
         # Assert that each topics' attributes are exactly the same
         for topic in textbook_obj.topics:
@@ -135,6 +144,13 @@ def test_commit_and_query_textbook(
             assert topic.name == pydantic_topic.name
             assert topic.summary == pydantic_topic.summary
             assert topic.outcomes == pydantic_topic.outcomes
+
+        # Assert that a predefined topic has a predefined activity
+        for topic in textbook_obj.topics:
+            if topic.guid == joined_topic_guid:
+                assert joined_activity_guid in [
+                    activity.guid for activity in topic.activities
+                ]
 
 
 def test_database_upgrade(file_database_path: Path):
