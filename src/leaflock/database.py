@@ -9,6 +9,7 @@ from sqlalchemy import create_engine
 def create_database(
     database_url: str | None = None,
     database_path: str | Path | None = None,
+    logging: bool = False,
 ):
     """Create a leaflock database from EITHER a url or path.
 
@@ -16,11 +17,14 @@ def create_database(
     :type database_url: str | None, optional
     :param database_path: File path of a database, will create if it does not exist, defaults to None.
     Takes precedence over `database_url`
+    :param logging: To log to console - can mess with other logging setups, set to False.
+    :type logging: bool
     :type database_path: str | Path | None, optional
     """
     upgrade_database(
         database_path=database_path,
         database_url=database_url,
+        logging=logging,
     )
 
 
@@ -30,6 +34,7 @@ def upgrade_database(
     alembic_cfg_path: str | Path | None = None,
     alembic_migration_path: str | Path | None = None,
     alembic_revision: str = "head",
+    logging: bool = False,
 ):
     """Upgrades a leaflock database to the newest revision by default.
     Requires env var "LEAFLOCK_DB_URL", or `database_url` or `database_path`.
@@ -41,7 +46,9 @@ def upgrade_database(
     :param alembic_cfg_path: Path to alternative alembic config.
     :type alembic_cfg_path: str | None
     :param alembic_revision: Revision to upgrade to, defaults to "head"
-    :type alembic_revision: str, optional
+    :type alembic_revision: str
+    :param logging: To log to console - can mess with other logging setups, set to False.
+    :type logging: bool
     :raises ValueError: If neither database url or path is provided, and environment var "LEAFLOCK_DB_URL" is unset.
     """
     if database_path is not None:
@@ -81,5 +88,6 @@ def upgrade_database(
 
     with engine.begin() as connection:
         alembic_cfg.attributes["connection"] = connection
+        alembic_cfg.attributes["logging"] = logging
         alembic_cfg.set_main_option("script_location", str(alembic_migration_path))
         command.upgrade(alembic_cfg, alembic_revision)
