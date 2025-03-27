@@ -16,6 +16,7 @@ def test_sqla_to_pydantic(complete_textbook_object: SQLTextbook):
     assert pydantic_textbook.title == complete_textbook_object.title
     assert pydantic_textbook.prompt == complete_textbook_object.prompt
     assert pydantic_textbook.authors == complete_textbook_object.authors
+    assert pydantic_textbook.reviewers == complete_textbook_object.reviewers
 
     sql_activity_by_guid: dict[uuid.UUID, SQLActivity] = {
         activity.guid: activity for activity in complete_textbook_object.activities
@@ -35,6 +36,8 @@ def test_sqla_to_pydantic(complete_textbook_object: SQLTextbook):
         assert pydantic_activity.name == sql_activity.name
         assert pydantic_activity.description == sql_activity.description
         assert pydantic_activity.prompt == sql_activity.prompt
+        assert pydantic_activity.authors == sql_activity.authors
+        assert pydantic_activity.sources == sql_activity.sources
         assert len(pydantic_activity.topics) == len(sql_activity.topics)
         assert pydantic_activity.topics == sql_activity.topics
 
@@ -45,6 +48,8 @@ def test_sqla_to_pydantic(complete_textbook_object: SQLTextbook):
         assert pydantic_topic.name == sql_topic.name
         assert pydantic_topic.summary == sql_topic.summary
         assert pydantic_topic.outcomes == sql_topic.outcomes
+        assert pydantic_topic.authors == pydantic_topic.authors
+        assert pydantic_topic.sources == pydantic_topic.sources
 
 
 def test_pydantic_to_sqla(complete_textbook_model: PydanticTextbook):
@@ -73,13 +78,17 @@ def test_pydantic_to_sqla(complete_textbook_model: PydanticTextbook):
         assert sql_activity.name == pydantic_activity.name
         assert sql_activity.description == pydantic_activity.description
         assert sql_activity.prompt == pydantic_activity.prompt
+        assert sql_activity.authors == pydantic_activity.authors
+        assert sql_activity.sources == pydantic_activity.sources
         assert len(sql_activity.topics) == len(pydantic_activity.topics)
         assert sql_activity.topics == pydantic_activity.topics
 
     # Assert that each topics' attributes are exactly the same
     for sql_topic in complete_textbook_model.topics:
-        pydantic_topics = pydantic_topic_by_guid.get(sql_topic.guid)
-        assert pydantic_topics is not None
-        assert sql_topic.name == pydantic_topics.name
-        assert sql_topic.summary == pydantic_topics.summary
-        assert sql_topic.outcomes == pydantic_topics.outcomes
+        pydantic_topic = pydantic_topic_by_guid.get(sql_topic.guid)
+        assert pydantic_topic is not None
+        assert sql_topic.name == pydantic_topic.name
+        assert sql_topic.summary == pydantic_topic.summary
+        assert sql_topic.outcomes == pydantic_topic.outcomes
+        assert sql_topic.authors == pydantic_topic.authors
+        assert sql_topic.sources == pydantic_topic.sources
