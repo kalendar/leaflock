@@ -21,7 +21,9 @@ class Textbook(MappedAsDataclass, Base):
 
     title: Mapped[str]
     prompt: Mapped[str]
+
     authors: Mapped[str]
+    reviewers: Mapped[str]
 
     activities: Mapped[set[Activity]] = relationship(
         default_factory=set,

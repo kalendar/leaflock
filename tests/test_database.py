@@ -1,7 +1,6 @@
 import uuid
 from pathlib import Path
 
-import pytest
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -12,48 +11,6 @@ from leaflock.pydantic_models import Topic as PydanticTopic
 from leaflock.sqlalchemy_tables import Activity as SQLActivity
 from leaflock.sqlalchemy_tables import Textbook as SQLTextbook
 from leaflock.sqlalchemy_tables import Topic as SQLTopic
-
-
-@pytest.fixture
-def textbook_data() -> PydanticTextbook:
-    return PydanticTextbook(
-        guid=uuid.uuid4(),
-        title="Test Title",
-        prompt="Test prompt.",
-        authors="Author 1\nAuthor 2.",
-        activities=set(
-            [
-                PydanticActivity(
-                    guid=uuid.uuid4(),
-                    name="Activity 1",
-                    description="Activity description 1",
-                    prompt="Activity prompt 1",
-                ),
-                PydanticActivity(
-                    guid=uuid.uuid4(),
-                    name="Activity 2",
-                    description="Activity description 2",
-                    prompt="Activity prompt 2",
-                ),
-            ]
-        ),
-        topics=set(
-            [
-                PydanticTopic(
-                    guid=uuid.uuid4(),
-                    name="Topic 1",
-                    outcomes="Topic outcome 1",
-                    summary="Topic summary 1",
-                ),
-                PydanticTopic(
-                    guid=uuid.uuid4(),
-                    name="Topic 2",
-                    outcomes="Topic outcome 2",
-                    summary="Topic summary 2",
-                ),
-            ]
-        ),
-    )
 
 
 def test_create_database_in_memory(in_memory_database_session: sessionmaker[Session]):
@@ -67,32 +24,38 @@ def test_create_database_as_file(file_database_path: Path):
 
 
 def test_commit_and_query_textbook(
-    in_memory_database_session: sessionmaker[Session], textbook_data: PydanticTextbook
+    in_memory_database_session: sessionmaker[Session],
+    complete_textbook_model: PydanticTextbook,
 ):
     activities: set[SQLActivity] = set()
-    for pydantic_activity in textbook_data.activities:
+    for pydantic_activity in complete_textbook_model.activities:
         sql_activity = SQLActivity(
             name=pydantic_activity.name,
             description=pydantic_activity.description,
             prompt=pydantic_activity.prompt,
+            sources=pydantic_activity.sources,
+            authors=pydantic_activity.authors,
         )
         sql_activity.guid = pydantic_activity.guid
         activities.add(sql_activity)
 
     topics: set[SQLTopic] = set()
-    for pydantic_topic in textbook_data.topics:
+    for pydantic_topic in complete_textbook_model.topics:
         sql_topic = SQLTopic(
             name=pydantic_topic.name,
             outcomes=pydantic_topic.outcomes,
             summary=pydantic_topic.summary,
+            sources=pydantic_topic.sources,
+            authors=pydantic_topic.authors,
         )
         sql_topic.guid = pydantic_topic.guid
         topics.add(sql_topic)
 
     sql_textbook = SQLTextbook(
-        title=textbook_data.title,
-        prompt=textbook_data.prompt,
-        authors=textbook_data.authors,
+        title=complete_textbook_model.title,
+        prompt=complete_textbook_model.prompt,
+        authors=complete_textbook_model.authors,
+        reviewers=complete_textbook_model.reviewers,
         activities=activities,
         topics=topics,
     )
@@ -114,20 +77,20 @@ def test_commit_and_query_textbook(
 
         # Assert that all textbook columns are present and exact
         assert textbook_obj is not None
-        assert textbook_obj.title == textbook_data.title
-        assert textbook_obj.prompt == textbook_data.prompt
-        assert textbook_obj.authors == textbook_data.authors
+        assert textbook_obj.title == complete_textbook_model.title
+        assert textbook_obj.prompt == complete_textbook_model.prompt
+        assert textbook_obj.authors == complete_textbook_model.authors
 
         pydantic_activity_by_guid: dict[uuid.UUID, PydanticActivity] = {
-            activity.guid: activity for activity in textbook_data.activities
+            activity.guid: activity for activity in complete_textbook_model.activities
         }
         pydantic_topic_by_guid: dict[uuid.UUID, PydanticTopic] = {
-            topic.guid: topic for topic in textbook_data.topics
+            topic.guid: topic for topic in complete_textbook_model.topics
         }
 
         # Assert that textbook activities and topics counts are correct
-        assert len(textbook_obj.activities) == len(textbook_data.activities)
-        assert len(textbook_obj.topics) == len(textbook_data.topics)
+        assert len(textbook_obj.activities) == len(complete_textbook_model.activities)
+        assert len(textbook_obj.topics) == len(complete_textbook_model.topics)
 
         # Assert that each activities' attributes are exactly the same
         for joined_activity in textbook_obj.activities:

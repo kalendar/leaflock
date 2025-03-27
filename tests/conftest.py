@@ -38,6 +38,7 @@ def complete_textbook_model() -> PydanticTextbook:
         title="Test Title",
         prompt="Test prompt.",
         authors="Author 1\nAuthor 2.",
+        reviewers="Reviewer 1\nReviewer 2.",
         activities=set(
             [
                 PydanticActivity(
@@ -46,6 +47,8 @@ def complete_textbook_model() -> PydanticTextbook:
                     description="Activity description 1",
                     prompt="Activity prompt 1",
                     topics=set([topic_1_guid]),
+                    sources="Source 1",
+                    authors="Author 1",
                 ),
                 PydanticActivity(
                     guid=uuid.uuid4(),
@@ -53,6 +56,8 @@ def complete_textbook_model() -> PydanticTextbook:
                     description="Activity description 2",
                     prompt="Activity prompt 2",
                     topics=set([topic_1_guid, topic_2_guid]),
+                    sources="Source 2",
+                    authors="Author 2",
                 ),
             ]
         ),
@@ -63,12 +68,16 @@ def complete_textbook_model() -> PydanticTextbook:
                     name="Topic 1",
                     outcomes="Topic outcome 1",
                     summary="Topic summary 1",
+                    sources="Source 1",
+                    authors="Author 1",
                 ),
                 PydanticTopic(
                     guid=topic_2_guid,
                     name="Topic 2",
                     outcomes="Topic outcome 2",
                     summary="Topic summary 2",
+                    sources="Source 2",
+                    authors="Author 2",
                 ),
             ]
         ),
@@ -84,12 +93,15 @@ def complete_textbook_object(
         title=complete_textbook_model.title,
         prompt=complete_textbook_model.prompt,
         authors=complete_textbook_model.authors,
+        reviewers=complete_textbook_model.reviewers,
         activities=set(
             [
                 SQLActivity(
                     name=activity.name,
                     description=activity.description,
                     prompt=activity.prompt,
+                    sources=activity.sources,
+                    authors=activity.authors,
                 )
                 for activity in complete_textbook_model.activities
             ]
@@ -100,6 +112,8 @@ def complete_textbook_object(
                     name=topic.name,
                     outcomes=topic.outcomes,
                     summary=topic.summary,
+                    sources=topic.sources,
+                    authors=topic.authors,
                 )
                 for topic in complete_textbook_model.topics
             ]

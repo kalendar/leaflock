@@ -14,6 +14,7 @@ def sqla_to_pydantic(sqla_textbook: SQLTextbook) -> PydanticTextbook:
         title=sqla_textbook.title,
         prompt=sqla_textbook.prompt,
         authors=sqla_textbook.authors,
+        reviewers=sqla_textbook.reviewers,
         activities=set(
             [
                 PydanticActivity(
@@ -22,6 +23,8 @@ def sqla_to_pydantic(sqla_textbook: SQLTextbook) -> PydanticTextbook:
                     description=activity.description,
                     prompt=activity.prompt,
                     topics=set([topic.guid for topic in activity.topics]),
+                    sources=activity.sources,
+                    authors=activity.authors,
                 )
                 for activity in sqla_textbook.activities
             ]
@@ -39,6 +42,8 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
             name=pydantic_topic.name,
             outcomes=pydantic_topic.outcomes,
             summary=pydantic_topic.summary,
+            sources=pydantic_topic.sources,
+            authors=pydantic_topic.authors,
         )
         sql_topic.guid = pydantic_topic.guid
         topics.add(sql_topic)
@@ -51,6 +56,8 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
             name=pydantic_activity.name,
             description=pydantic_activity.description,
             prompt=pydantic_activity.prompt,
+            sources=pydantic_activity.sources,
+            authors=pydantic_activity.authors,
         )
 
         for guid in pydantic_activity.topics:
@@ -66,6 +73,7 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
         title=pydantic_textbook.title,
         prompt=pydantic_textbook.prompt,
         authors=pydantic_textbook.authors,
+        reviewers=pydantic_textbook.reviewers,
         activities=activities,
         topics=topics,
     )

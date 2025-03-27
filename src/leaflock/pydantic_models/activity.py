@@ -5,9 +5,14 @@ from pydantic import BaseModel, Field
 
 class Activity(BaseModel, from_attributes=True):
     guid: uuid.UUID
+
     name: str
+
     description: str
     prompt: str
+
+    sources: str
+    authors: str
 
     topics: set[uuid.UUID] = Field(default_factory=set)
 

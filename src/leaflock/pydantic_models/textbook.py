@@ -8,9 +8,13 @@ from .topic import Topic
 
 class Textbook(BaseModel):
     guid: uuid.UUID
+
     title: str
+
     prompt: str
+
     authors: str
+    reviewers: str
 
     activities: set[Activity]
     topics: set[Topic]

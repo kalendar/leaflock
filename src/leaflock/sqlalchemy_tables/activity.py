@@ -25,6 +25,9 @@ class Activity(MappedAsDataclass, Base):
     description: Mapped[str]
     prompt: Mapped[str]
 
+    sources: Mapped[str]
+    authors: Mapped[str]
+
     textbook_guid: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("textbooks.guid"),
         init=False,
