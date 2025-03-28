@@ -29,6 +29,7 @@ Issues = "https://github.com/kalendar/leaflock/issues"
 dev = [
     "build>=1.2.2.post1",
     "hatchling>=1.27.0",
+    "pre-commit>=4.2.0",
     "pytest>=8.3.5",
     "twine>=6.1.0",
 ]
