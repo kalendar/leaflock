@@ -11,8 +11,8 @@ class Topic(BaseModel, from_attributes=True):
     outcomes: str
     summary: str
 
-    sources: str
-    authors: str
+    sources: str | None
+    authors: str | None
 
     def __hash__(self) -> int:
         return hash(self.guid)

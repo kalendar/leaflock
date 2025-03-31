@@ -15,6 +15,10 @@ def sqla_to_pydantic(sqla_textbook: SQLTextbook) -> PydanticTextbook:
         prompt=sqla_textbook.prompt,
         authors=sqla_textbook.authors,
         reviewers=sqla_textbook.reviewers,
+        status=sqla_textbook.status,
+        edition=sqla_textbook.edition,
+        schema_version=sqla_textbook.schema_version,
+        attributes=sqla_textbook.attributes,
         activities=set(
             [
                 PydanticActivity(
@@ -74,6 +78,10 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
         prompt=pydantic_textbook.prompt,
         authors=pydantic_textbook.authors,
         reviewers=pydantic_textbook.reviewers,
+        status=pydantic_textbook.status,
+        edition=pydantic_textbook.edition,
+        schema_version=pydantic_textbook.schema_version,
+        attributes=pydantic_textbook.attributes,
         activities=activities,
         topics=topics,
     )

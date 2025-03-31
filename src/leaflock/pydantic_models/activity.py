@@ -8,11 +8,11 @@ class Activity(BaseModel, from_attributes=True):
 
     name: str
 
-    description: str
     prompt: str
+    description: str | None
 
-    sources: str
-    authors: str
+    sources: str | None
+    authors: str | None
 
     topics: set[uuid.UUID] = Field(default_factory=set)
 

@@ -39,6 +39,10 @@ def complete_textbook_model() -> PydanticTextbook:
         prompt="Test prompt.",
         authors="Author 1\nAuthor 2.",
         reviewers="Reviewer 1\nReviewer 2.",
+        attributes={
+            "attr_1": 1,
+            "attr_2": "2",
+        },
         activities=set(
             [
                 PydanticActivity(
@@ -94,6 +98,11 @@ def complete_textbook_object(
         prompt=complete_textbook_model.prompt,
         authors=complete_textbook_model.authors,
         reviewers=complete_textbook_model.reviewers,
+        status=complete_textbook_model.status,
+        attributes={
+            "attr_1": 1,
+            "attr_2": "2",
+        },
         activities=set(
             [
                 SQLActivity(

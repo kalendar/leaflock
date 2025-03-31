@@ -17,6 +17,21 @@ def test_sqla_to_pydantic(complete_textbook_object: SQLTextbook):
     assert pydantic_textbook.prompt == complete_textbook_object.prompt
     assert pydantic_textbook.authors == complete_textbook_object.authors
     assert pydantic_textbook.reviewers == complete_textbook_object.reviewers
+    assert pydantic_textbook.status == complete_textbook_object.status
+    assert pydantic_textbook.edition == complete_textbook_object.edition
+    assert pydantic_textbook.schema_version == complete_textbook_object.schema_version
+
+    assert len(pydantic_textbook.attributes.keys()) == len(
+        complete_textbook_object.attributes.keys()
+    )
+
+    for pydantic_key, sql_key in zip(
+        pydantic_textbook.attributes.keys(), complete_textbook_object.attributes.keys()
+    ):
+        pydantic_value = pydantic_textbook.attributes.get(pydantic_key)
+        sql_value = complete_textbook_object.attributes.get(sql_key)
+
+        assert pydantic_value == sql_value
 
     sql_activity_by_guid: dict[uuid.UUID, SQLActivity] = {
         activity.guid: activity for activity in complete_textbook_object.activities
@@ -59,6 +74,22 @@ def test_pydantic_to_sqla(complete_textbook_model: PydanticTextbook):
     assert sql_textbook.title == complete_textbook_model.title
     assert sql_textbook.prompt == complete_textbook_model.prompt
     assert sql_textbook.authors == complete_textbook_model.authors
+    assert sql_textbook.reviewers == complete_textbook_model.reviewers
+    assert sql_textbook.status == complete_textbook_model.status
+    assert sql_textbook.edition == complete_textbook_model.edition
+    assert sql_textbook.schema_version == complete_textbook_model.schema_version
+
+    assert len(sql_textbook.attributes.keys()) == len(
+        complete_textbook_model.attributes.keys()
+    )
+
+    for pydantic_key, sql_key in zip(
+        complete_textbook_model.attributes.keys(), sql_textbook.attributes.keys()
+    ):
+        pydantic_value = complete_textbook_model.attributes.get(pydantic_key)
+        sql_value = sql_textbook.attributes.get(sql_key)
+
+        assert pydantic_value == sql_value
 
     pydantic_activity_by_guid: dict[uuid.UUID, PydanticActivity] = {
         activity.guid: activity for activity in complete_textbook_model.activities

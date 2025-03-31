@@ -19,20 +19,27 @@ class Topic(MappedAsDataclass, Base):
     __tablename__ = "topics"
 
     guid: Mapped[uuid.UUID] = mapped_column(
-        init=False, primary_key=True, insert_default=uuid.uuid4
+        init=False,
+        primary_key=True,
+        insert_default=uuid.uuid4,
     )
 
     name: Mapped[str]
+
     outcomes: Mapped[str]
     summary: Mapped[str]
 
-    sources: Mapped[str]
-    authors: Mapped[str]
+    sources: Mapped[str | None] = mapped_column(default=None)
+    authors: Mapped[str | None] = mapped_column(default=None)
 
     textbook_guid: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("textbooks.guid"), init=False
+        ForeignKey("textbooks.guid"),
+        init=False,
     )
-    textbook: Mapped[Textbook] = relationship(back_populates="topics", init=False)
+    textbook: Mapped[Textbook] = relationship(
+        back_populates="topics",
+        init=False,
+    )
 
     activities: Mapped[set[Activity]] = relationship(
         default_factory=set,

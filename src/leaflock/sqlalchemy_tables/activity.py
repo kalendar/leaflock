@@ -18,21 +18,27 @@ class Activity(MappedAsDataclass, Base):
     __tablename__ = "activities"
 
     guid: Mapped[uuid.UUID] = mapped_column(
-        init=False, primary_key=True, insert_default=uuid.uuid4
+        init=False,
+        primary_key=True,
+        insert_default=uuid.uuid4,
     )
 
     name: Mapped[str]
-    description: Mapped[str]
-    prompt: Mapped[str]
 
-    sources: Mapped[str]
-    authors: Mapped[str]
+    prompt: Mapped[str]
+    description: Mapped[str | None] = mapped_column(default=None)
+
+    sources: Mapped[str | None] = mapped_column(default=None)
+    authors: Mapped[str | None] = mapped_column(default=None)
 
     textbook_guid: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("textbooks.guid"),
         init=False,
     )
-    textbook: Mapped[Textbook] = relationship(back_populates="activities", init=False)
+    textbook: Mapped[Textbook] = relationship(
+        back_populates="activities",
+        init=False,
+    )
 
     topics: Mapped[set[Topic]] = relationship(
         default_factory=set,
