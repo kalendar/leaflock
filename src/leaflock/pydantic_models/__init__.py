@@ -1,4 +1,5 @@
-# type: ignore
-from .activity import Activity  # noqa: F401
-from .textbook import Textbook  # noqa: F401
-from .topic import Topic  # noqa: F401
+from .activity import Activity
+from .textbook import Textbook
+from .topic import Topic
+
+__all__ = ["Activity", "Textbook", "Topic"]

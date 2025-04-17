@@ -29,6 +29,8 @@ class Topic(MappedAsDataclass, Base):
     outcomes: Mapped[str]
     summary: Mapped[str]
 
+    position: Mapped[int | None] = mapped_column(default=None)
+
     sources: Mapped[str | None] = mapped_column(default=None)
     authors: Mapped[str | None] = mapped_column(default=None)
 

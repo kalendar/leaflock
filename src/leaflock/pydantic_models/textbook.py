@@ -25,8 +25,8 @@ class Textbook(BaseModel):
 
     attributes: dict[str, Any]
 
-    activities: set[Activity]
-    topics: set[Topic]
+    activities: list[Activity]
+    topics: list[Topic]
 
     def __hash__(self) -> int:
         return hash(self.guid)

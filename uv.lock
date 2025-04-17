@@ -311,7 +311,7 @@ wheels = [
 
 [[package]]
 name = "leaflock"
-version = "0.1.8"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },

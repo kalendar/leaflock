@@ -19,28 +19,24 @@ def sqla_to_pydantic(sqla_textbook: SQLTextbook) -> PydanticTextbook:
         edition=sqla_textbook.edition,
         schema_version=sqla_textbook.schema_version,
         attributes=sqla_textbook.attributes,
-        activities=set(
-            [
-                PydanticActivity(
-                    guid=activity.guid,
-                    name=activity.name,
-                    description=activity.description,
-                    prompt=activity.prompt,
-                    topics=set([topic.guid for topic in activity.topics]),
-                    sources=activity.sources,
-                    authors=activity.authors,
-                )
-                for activity in sqla_textbook.activities
-            ]
-        ),
-        topics=set(
-            [PydanticTopic.model_validate(topic) for topic in sqla_textbook.topics]
-        ),
+        activities=[
+            PydanticActivity(
+                guid=activity.guid,
+                name=activity.name,
+                description=activity.description,
+                prompt=activity.prompt,
+                topics=set([topic.guid for topic in activity.topics]),
+                sources=activity.sources,
+                authors=activity.authors,
+            )
+            for activity in sqla_textbook.activities
+        ],
+        topics=[PydanticTopic.model_validate(topic) for topic in sqla_textbook.topics],
     )
 
 
 def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
-    topics: set[SQLTopic] = set()
+    topics: list[SQLTopic] = list()
     for pydantic_topic in pydantic_textbook.topics:
         sql_topic = SQLTopic(
             name=pydantic_topic.name,
@@ -50,11 +46,11 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
             authors=pydantic_topic.authors,
         )
         sql_topic.guid = pydantic_topic.guid
-        topics.add(sql_topic)
+        topics.append(sql_topic)
 
     topics_by_guid: dict[uuid.UUID, SQLTopic] = {topic.guid: topic for topic in topics}
 
-    activities: set[SQLActivity] = set()
+    activities: list[SQLActivity] = list()
     for pydantic_activity in pydantic_textbook.activities:
         sql_activity = SQLActivity(
             name=pydantic_activity.name,
@@ -71,7 +67,7 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
             sql_activity.topics.add(topic)
 
         sql_activity.guid = pydantic_activity.guid
-        activities.add(sql_activity)
+        activities.append(sql_activity)
 
     return SQLTextbook(
         title=pydantic_textbook.title,

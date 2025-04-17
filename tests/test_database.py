@@ -27,7 +27,7 @@ def test_commit_and_query_textbook(
     in_memory_database_session: sessionmaker[Session],
     complete_textbook_model: PydanticTextbook,
 ):
-    activities: set[SQLActivity] = set()
+    activities: list[SQLActivity] = list()
     for pydantic_activity in complete_textbook_model.activities:
         sql_activity = SQLActivity(
             name=pydantic_activity.name,
@@ -37,9 +37,9 @@ def test_commit_and_query_textbook(
             authors=pydantic_activity.authors,
         )
         sql_activity.guid = pydantic_activity.guid
-        activities.add(sql_activity)
+        activities.append(sql_activity)
 
-    topics: set[SQLTopic] = set()
+    topics: list[SQLTopic] = list()
     for pydantic_topic in complete_textbook_model.topics:
         sql_topic = SQLTopic(
             name=pydantic_topic.name,
@@ -49,7 +49,7 @@ def test_commit_and_query_textbook(
             authors=pydantic_topic.authors,
         )
         sql_topic.guid = pydantic_topic.guid
-        topics.add(sql_topic)
+        topics.append(sql_topic)
 
     sql_textbook = SQLTextbook(
         title=complete_textbook_model.title,

@@ -26,6 +26,9 @@ class Activity(MappedAsDataclass, Base):
     name: Mapped[str]
 
     prompt: Mapped[str]
+
+    position: Mapped[int | None] = mapped_column(default=None)
+
     description: Mapped[str | None] = mapped_column(default=None)
 
     sources: Mapped[str | None] = mapped_column(default=None)

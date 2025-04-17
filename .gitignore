@@ -17,3 +17,5 @@ wheels/
 
 # Ignore testing cache
 .pytest_cache
+
+dev

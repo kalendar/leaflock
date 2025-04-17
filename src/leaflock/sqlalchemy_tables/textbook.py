@@ -4,6 +4,7 @@ import uuid
 from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
+from sqlalchemy.ext.orderinglist import ordering_list  # type: ignore
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
 from .base import Base
@@ -40,15 +41,19 @@ class Textbook(MappedAsDataclass, Base):
 
     attributes: Mapped[dict[str, Any]] = mapped_column(default_factory=dict)
 
-    activities: Mapped[set[Activity]] = relationship(
-        default_factory=set,
+    activities: Mapped[list[Activity]] = relationship(
+        default_factory=list,
         back_populates="textbook",
+        order_by="Activity.position",
+        collection_class=ordering_list("position"),  # type: ignore
         cascade="all, delete-orphan",
     )
 
-    topics: Mapped[set[Topic]] = relationship(
-        default_factory=set,
+    topics: Mapped[list[Topic]] = relationship(
+        default_factory=list,
         back_populates="textbook",
+        order_by="Topic.position",
+        collection_class=ordering_list("position"),  # type: ignore
         cascade="all, delete-orphan",
     )
 
