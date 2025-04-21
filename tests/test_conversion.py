@@ -44,6 +44,7 @@ def test_sqla_to_pydantic(complete_textbook_object: SQLTextbook):
         assert pydantic_activity.sources == sql_activity.sources
         assert len(pydantic_activity.topics) == len(sql_activity.topics)
         assert pydantic_activity.topics == sql_activity.topics
+        assert pydantic_activity.license == sql_activity.license
 
     # Assert that each topics' attributes are exactly the same, same order
     for sql_topic, pydantic_topic in zip(
@@ -54,8 +55,9 @@ def test_sqla_to_pydantic(complete_textbook_object: SQLTextbook):
         assert pydantic_topic.name == sql_topic.name
         assert pydantic_topic.summary == sql_topic.summary
         assert pydantic_topic.outcomes == sql_topic.outcomes
-        assert pydantic_topic.authors == pydantic_topic.authors
-        assert pydantic_topic.sources == pydantic_topic.sources
+        assert pydantic_topic.authors == sql_topic.authors
+        assert pydantic_topic.sources == sql_topic.sources
+        assert pydantic_topic.license == sql_topic.license
 
 
 def test_pydantic_to_sqla(complete_textbook_model: PydanticTextbook):
@@ -97,6 +99,7 @@ def test_pydantic_to_sqla(complete_textbook_model: PydanticTextbook):
         assert sql_activity.prompt == pydantic_activity.prompt
         assert sql_activity.authors == pydantic_activity.authors
         assert sql_activity.sources == pydantic_activity.sources
+        assert sql_activity.license == pydantic_activity.license
         assert len(sql_activity.topics) == len(pydantic_activity.topics)
         assert (
             set([topic.guid for topic in sql_activity.topics])
@@ -114,3 +117,4 @@ def test_pydantic_to_sqla(complete_textbook_model: PydanticTextbook):
         assert sql_topic.outcomes == pydantic_topic.outcomes
         assert sql_topic.authors == pydantic_topic.authors
         assert sql_topic.sources == pydantic_topic.sources
+        assert sql_topic.license == pydantic_topic.license

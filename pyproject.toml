@@ -1,6 +1,6 @@
 [project]
 name = "leaflock"
-version = "0.2.2"
+version = "0.3.0"
 authors = [
   { name="David Wiley", email="david.wiley@gmail.com" },
   { name="Joshua Maddy", email="joshuadcmaddy@gmail.com" },
@@ -16,6 +16,7 @@ license = "AGPL-3.0-or-later"
 
 dependencies = [
     "alembic>=1.15.1",
+    "bidict>=0.23.1",
     "dotenv>=0.9.9",
     "pydantic>=2.10.6",
     "sqlalchemy>=2.0.39",

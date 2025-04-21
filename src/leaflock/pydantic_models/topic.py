@@ -2,6 +2,8 @@ import uuid
 
 from pydantic import BaseModel
 
+from leaflock.licenses import License
+
 
 class Topic(BaseModel, from_attributes=True):
     guid: uuid.UUID
@@ -13,6 +15,8 @@ class Topic(BaseModel, from_attributes=True):
 
     sources: str | None
     authors: str | None
+
+    license: License
 
     def __hash__(self) -> int:
         return hash(self.guid)

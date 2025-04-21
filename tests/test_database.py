@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from leaflock.database import create_database, upgrade_database
+from leaflock.licenses import License
 from leaflock.pydantic_models import Activity as PydanticActivity
 from leaflock.pydantic_models import Textbook as PydanticTextbook
 from leaflock.pydantic_models import Topic as PydanticTopic
@@ -35,6 +36,7 @@ def test_commit_and_query_textbook(
             prompt=pydantic_activity.prompt,
             sources=pydantic_activity.sources,
             authors=pydantic_activity.authors,
+            license=License.CC0_1_0,
         )
         sql_activity.guid = pydantic_activity.guid
         activities.append(sql_activity)
@@ -47,6 +49,7 @@ def test_commit_and_query_textbook(
             summary=pydantic_topic.summary,
             sources=pydantic_topic.sources,
             authors=pydantic_topic.authors,
+            license=License.CC0_1_0,
         )
         sql_topic.guid = pydantic_topic.guid
         topics.append(sql_topic)

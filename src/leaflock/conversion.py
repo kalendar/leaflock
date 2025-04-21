@@ -28,6 +28,7 @@ def sqla_to_pydantic(sqla_textbook: SQLTextbook) -> PydanticTextbook:
                 topics=set([topic.guid for topic in activity.topics]),
                 sources=activity.sources,
                 authors=activity.authors,
+                license=activity.license,
             )
             for activity in sqla_textbook.activities
         ],
@@ -44,6 +45,7 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
             summary=pydantic_topic.summary,
             sources=pydantic_topic.sources,
             authors=pydantic_topic.authors,
+            license=pydantic_topic.license,
         )
         sql_topic.guid = pydantic_topic.guid
         topics.append(sql_topic)
@@ -58,6 +60,7 @@ def pydantic_to_sqla(pydantic_textbook: PydanticTextbook) -> SQLTextbook:
             prompt=pydantic_activity.prompt,
             sources=pydantic_activity.sources,
             authors=pydantic_activity.authors,
+            license=pydantic_activity.license,
         )
 
         for guid in pydantic_activity.topics:

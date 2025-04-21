@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, joinedload, sessionmaker
 
+from leaflock.licenses import License
 from leaflock.pydantic_models import Activity as PydanticActivity
 from leaflock.pydantic_models import Textbook as PydanticTextbook
 from leaflock.pydantic_models import Topic as PydanticTopic
@@ -52,6 +53,7 @@ def complete_textbook_model() -> PydanticTextbook:
                 topics=set([topic_1_guid]),
                 sources="Source 1",
                 authors="Author 1",
+                license=License.CC0_1_0,
             ),
             PydanticActivity(
                 guid=uuid.uuid4(),
@@ -61,6 +63,7 @@ def complete_textbook_model() -> PydanticTextbook:
                 topics=set([topic_1_guid, topic_2_guid]),
                 sources="Source 2",
                 authors="Author 2",
+                license=License.CC0_1_0,
             ),
         ],
         topics=[
@@ -71,6 +74,7 @@ def complete_textbook_model() -> PydanticTextbook:
                 summary="Topic summary 1",
                 sources="Source 1",
                 authors="Author 1",
+                license=License.CC0_1_0,
             ),
             PydanticTopic(
                 guid=topic_2_guid,
@@ -79,6 +83,7 @@ def complete_textbook_model() -> PydanticTextbook:
                 summary="Topic summary 2",
                 sources="Source 2",
                 authors="Author 2",
+                license=License.CC0_1_0,
             ),
         ],
     )
@@ -106,6 +111,7 @@ def complete_textbook_object(
                 prompt=activity.prompt,
                 sources=activity.sources,
                 authors=activity.authors,
+                license=License.CC0_1_0,
             )
             for activity in complete_textbook_model.activities
         ],
@@ -116,6 +122,7 @@ def complete_textbook_object(
                 summary=topic.summary,
                 sources=topic.sources,
                 authors=topic.authors,
+                license=License.CC0_1_0,
             )
             for topic in complete_textbook_model.topics
         ],

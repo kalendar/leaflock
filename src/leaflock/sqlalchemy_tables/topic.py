@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
+from leaflock.licenses import License
+
 from .base import Base
 from .joins import topic_activity
 from .textbook import Textbook
@@ -28,6 +30,8 @@ class Topic(MappedAsDataclass, Base):
 
     outcomes: Mapped[str]
     summary: Mapped[str]
+
+    license: Mapped[License]
 
     position: Mapped[int | None] = mapped_column(default=None)
 
