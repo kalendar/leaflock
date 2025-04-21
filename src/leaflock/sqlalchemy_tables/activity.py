@@ -29,7 +29,7 @@ class Activity(MappedAsDataclass, Base):
 
     prompt: Mapped[str]
 
-    license: Mapped[License]
+    license: Mapped[License] = mapped_column(default=License.CC0_1_0)
 
     position: Mapped[int | None] = mapped_column(default=None)
 
