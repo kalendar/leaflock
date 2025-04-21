@@ -1,6 +1,6 @@
 [project]
 name = "leaflock"
-version = "0.3.1"
+version = "0.3.3"
 authors = [
   { name="David Wiley", email="david.wiley@gmail.com" },
   { name="Joshua Maddy", email="joshuadcmaddy@gmail.com" },

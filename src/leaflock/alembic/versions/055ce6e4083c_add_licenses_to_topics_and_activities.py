@@ -34,6 +34,7 @@ def upgrade() -> None:
                     name="license",
                 ),
                 nullable=False,
+                server_default="CC0_1_0",
             )
         )
 
@@ -50,6 +51,7 @@ def upgrade() -> None:
                     name="license",
                 ),
                 nullable=False,
+                server_default="CC0_1_0",
             )
         )
     # ### end Alembic commands ###
